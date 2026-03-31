@@ -145,3 +145,72 @@ function showError(message) {
 }
 
 console.log("✅ Pull Request #3: API definiții integrat");
+// ========== API SINONIME ANTONIME ==========
+async function fetchSynonymsAntonyms(word) {
+    const synonymsUrl = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}&max=12`;
+    const antonymsUrl = `https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}&max=12`;
+    try {
+        const [synRes, antRes] = await Promise.all([
+            fetch(synonymsUrl),
+            fetch(antonymsUrl)
+        ]);
+        if (!synRes.ok || !antRes.ok) throw new Error("Eroare thesaurus");
+        const synonymsData = await synRes.json();
+        const antonymsData = await antRes.json();
+        const synonyms = synonymsData.map(item => item.word);
+        const antonyms = antonymsData.map(item => item.word);
+        return { synonyms, antonyms };
+    } catch (err) {
+        console.warn("Eroare Datamuse:", err);
+        return { synonyms: [], antonyms: [] };
+    }
+}
+
+// ========== AFIȘARE SINONIME/ANTONIME ==========
+function renderSynonymsAntonyms(synonyms, antonyms) {
+    const synonymsHtml = synonyms.length > 0 
+        ? synonyms.map(syn => `<span class="word-tag syn-tag">${syn}</span>`).join('')
+        : '<span style="opacity:0.6;">Nu există sinonime</span>';
+    
+    const antonymsHtml = antonyms.length > 0 
+        ? antonyms.map(ant => `<span class="word-tag ant-tag">${ant}</span>`).join('')
+        : '<span style="opacity:0.6;">Nu există antonime</span>';
+
+    return `
+        <div class="syn-ant-section">
+            <div class="synonyms-box">
+                <div class="badge-title">🔄 SINONIME</div>
+                <div>${synonymsHtml}</div>
+            </div>
+            <div class="antonyms-box">
+                <div class="badge-title">⚡ ANTONIME</div>
+                <div>${antonymsHtml}</div>
+            </div>
+        </div>
+    `;
+}
+
+// ========== FUNCȚIE CAUTARE ACTUALIZATĂ ==========
+async function searchWord() {
+    let word = wordInput.value.trim();
+    if (word === "") {
+        showError("Te rog să introduci un cuvânt.");
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const [definitionResult, thesaurusResult] = await Promise.all([
+            fetchDefinitions(word.toLowerCase()),
+            fetchSynonymsAntonyms(word.toLowerCase())
+        ]);
+        
+        const definitionsHtml = definitionResult ? renderDefinitions(word, definitionResult) : `<div class="info-text">⚠️ Nu există definiții pentru "${word}".</div>`;
+        const synonymsAntonymsHtml = renderSynonymsAntonyms(thesaurusResult.synonyms, thesaurusResult.antonyms);
+        
+        resultContainer.innerHTML = `<div class="results-card">${definitionsHtml}${synonymsAntonymsHtml}</div>`;
+    } catch (err) {
+        showError("Eroare de rețea. Reîncearcă.");
+    }
+}
