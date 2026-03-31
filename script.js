@@ -53,6 +53,7 @@ wordInput.addEventListener('keypress', (e) => {
 });
 
 console.log("✅ Pull Request #2: Bara de căutare funcțională");
+
 // ========== API DEFINITII ==========
 async function fetchDefinitions(word) {
     const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
@@ -234,3 +235,4 @@ resultContainer.addEventListener('click', async (e) => {
 wordInput.focus();
 
 console.log("✅ Pull Request #5: Interactivitate completă - click pe sinonime/antonime");
+
