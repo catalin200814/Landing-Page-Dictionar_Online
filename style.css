@@ -1,0 +1,100 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background-color 0.3s ease, color 0.2s ease;
+}
+
+:root {
+    --bg-gradient-start: #f8fafc;
+    --bg-gradient-end: #eef2f6;
+    --card-bg: rgba(255, 255, 255, 0.92);
+    --text-primary: #0f172a;
+    --text-secondary: #334155;
+    --accent: #6366f1;
+    --accent-dark: #4f46e5;
+    --accent-glow: rgba(99, 102, 241, 0.15);
+    --border-light: #e2e8f0;
+    --shadow-sm: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    --gradient-text: linear-gradient(135deg, #6366f1, #a855f7);
+}
+
+body.dark {
+    --bg-gradient-start: #0f172a;
+    --bg-gradient-end: #1e293b;
+    --card-bg: rgba(30, 41, 59, 0.9);
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --border-light: #334155;
+    --accent-glow: rgba(99, 102, 241, 0.25);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+    min-height: 100vh;
+    padding: 2rem 1.5rem;
+    color: var(--text-primary);
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+}
+
+/* ========== HEADER STYLES START ========== */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    gap: 1rem;
+}
+
+.logo h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: var(--gradient-text);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.02em;
+}
+
+.logo p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+}
+
+.dark-toggle {
+    background: var(--card-bg);
+    border: 1px solid var(--border-light);
+    border-radius: 3rem;
+    padding: 0.5rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    font-weight: 500;
+    backdrop-filter: blur(4px);
+    box-shadow: var(--shadow-sm);
+    transition: all 0.2s ease;
+}
+
+.dark-toggle:hover {
+    transform: scale(0.97);
+    background: var(--accent-glow);
+    border-color: var(--accent);
+}
+/* ========== HEADER STYLES END ========== */
+
+.info-text {
+    text-align: center;
+    color: var(--text-secondary);
+    padding: 2.5rem;
+    background: var(--card-bg);
+    border-radius: 2rem;
+    border: 1px dashed var(--border-light);
+}
