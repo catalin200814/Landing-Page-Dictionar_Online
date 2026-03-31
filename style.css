@@ -282,3 +282,62 @@ body {
     border-radius: 1rem;
     color: #ef4444;
 }
+/* ========== SYNONYMS & ANTONYMS STYLES ========== */
+.syn-ant-section {
+    margin-top: 1.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: space-between;
+}
+
+.synonyms-box, .antonyms-box {
+    flex: 1;
+    min-width: 200px;
+    background: var(--placeholder-bg);
+    border-radius: 1.5rem;
+    padding: 1rem 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.synonyms-box:hover, .antonyms-box:hover {
+    transform: translateY(-2px);
+}
+
+.badge-title {
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.word-tag {
+    display: inline-block;
+    background: white;
+    padding: 0.3rem 0.9rem;
+    border-radius: 2rem;
+    margin: 0.3rem 0.4rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 1px solid var(--border-light);
+    color: var(--text-primary);
+}
+
+.word-tag:hover {
+    transform: scale(1.05);
+    border-color: var(--accent);
+}
+
+.syn-tag {
+    background: rgba(16, 185, 129, 0.15);
+    border-left: 3px solid #10b981;
+}
+
+.ant-tag {
+    background: rgba(239, 68, 68, 0.12);
+    border-left: 3px solid #ef4444;
+}
