@@ -98,3 +98,67 @@ body {
     border-radius: 2rem;
     border: 1px dashed var(--border-light);
 }
+/* ========== SEARCH BAR STYLES START ========== */
+.search-section {
+    margin-bottom: 2.5rem;
+}
+
+.search-box {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    background: var(--card-bg);
+    padding: 0.5rem;
+    border-radius: 4rem;
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-light);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.3s ease;
+}
+
+.search-box:focus-within {
+    box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow-sm);
+}
+
+.search-box input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 1rem 1.8rem;
+    font-size: 1.1rem;
+    outline: none;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.search-box input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
+.search-box button {
+    background: var(--accent);
+    border: none;
+    padding: 0 2rem;
+    border-radius: 3rem;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.search-box button:hover {
+    background: var(--accent-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+}
+
+.search-box button:active {
+    transform: translateY(0);
+}
+/* ========== SEARCH BAR STYLES END ========== */
