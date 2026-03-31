@@ -214,3 +214,23 @@ async function searchWord() {
         showError("Eroare de rețea. Reîncearcă.");
     }
 }
+// ========== CLICK PE SINONIME/ANTONIME ==========
+resultContainer.addEventListener('click', async (e) => {
+    let target = e.target;
+    if (target.classList && target.classList.contains('word-tag')) {
+        const clickedWord = target.innerText.trim();
+        if (clickedWord && clickedWord.length > 0) {
+            wordInput.value = clickedWord;
+            await searchWord();
+            const resultsCard = document.querySelector('.results-card');
+            if (resultsCard) {
+                resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+});
+
+// Focus pe input la încărcare
+wordInput.focus();
+
+console.log("✅ Pull Request #5: Interactivitate completă - click pe sinonime/antonime");
