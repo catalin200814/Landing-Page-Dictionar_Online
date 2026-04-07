@@ -54,7 +54,11 @@ wordInput.addEventListener('keypress', (e) => {
 
 console.log("✅ Pull Request #2: Bara de căutare funcțională");
 
+ feature/pronunciation-audio
+
+
 // ========== API DEFINITII ==========
+> main
 async function fetchDefinitions(word) {
     const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
     try {
@@ -72,7 +76,11 @@ async function fetchDefinitions(word) {
     }
 }
 
+ feature/pronunciation-audio
+
+
 // ========== AFIȘARE DEFINITII ==========
+ main
 function renderDefinitions(word, definitionData) {
     if (!definitionData) {
         return `<div class="info-text">⚠️ Nu am găsit definiții pentru "${word}".</div>`;
@@ -111,7 +119,11 @@ function renderDefinitions(word, definitionData) {
     `;
 }
 
+ feature/pronunciation-audio
+
+
 // ========== FUNCȚIE CAUTARE COMPLETĂ ==========
+ main
 async function searchWord() {
     let word = wordInput.value.trim();
     if (word === "") {
@@ -136,7 +148,11 @@ async function searchWord() {
     }
 }
 
+ feature/pronunciation-audio
+
+
 // ========== FUNCȚII AJUTĂTOARE ==========
+ main
 function showLoading() {
     resultContainer.innerHTML = `<div class="results-card"><div class="loader"><div class="spinner"></div><span>Se încarcă definițiile...</span></div></div>`;
 }
@@ -146,7 +162,11 @@ function showError(message) {
 }
 
 console.log("✅ Pull Request #3: API definiții integrat");
+ feature/pronunciation-audio
+
+
 // ========== API SINONIME ANTONIME ==========
+ main
 async function fetchSynonymsAntonyms(word) {
     const synonymsUrl = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}&max=12`;
     const antonymsUrl = `https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}&max=12`;
@@ -167,7 +187,11 @@ async function fetchSynonymsAntonyms(word) {
     }
 }
 
+ feature/pronunciation-audio
+
+
 // ========== AFIȘARE SINONIME/ANTONIME ==========
+ main
 function renderSynonymsAntonyms(synonyms, antonyms) {
     const synonymsHtml = synonyms.length > 0 
         ? synonyms.map(syn => `<span class="word-tag syn-tag">${syn}</span>`).join('')
@@ -191,7 +215,11 @@ function renderSynonymsAntonyms(synonyms, antonyms) {
     `;
 }
 
+ feature/pronunciation-audio
+
+
 // ========== FUNCȚIE CAUTARE ACTUALIZATĂ ==========
+ main
 async function searchWord() {
     let word = wordInput.value.trim();
     if (word === "") {
@@ -215,7 +243,11 @@ async function searchWord() {
         showError("Eroare de rețea. Reîncearcă.");
     }
 }
+ feature/pronunciation-audio
+
+
 // ========== CLICK PE SINONIME/ANTONIME ==========
+ main
 resultContainer.addEventListener('click', async (e) => {
     let target = e.target;
     if (target.classList && target.classList.contains('word-tag')) {
@@ -235,6 +267,100 @@ resultContainer.addEventListener('click', async (e) => {
 wordInput.focus();
 
 console.log("✅ Pull Request #5: Interactivitate completă - click pe sinonime/antonime");
+feature/pronunciation-audio
+let currentAudioUrl = null;
+
+async function fetchPronunciation(word) {
+    // Folosește API-ul gratuit de la FreeDictionary (deja avem audio în definitionData)
+    try {
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
+        const data = await response.json();
+        if (data && data[0] && data[0].phonetics) {
+            const audio = data[0].phonetics.find(p => p.audio);
+            if (audio && audio.audio) {
+                return audio.audio;
+            }
+        }
+        return null;
+    } catch (err) {
+        console.warn("Eroare pronunție:", err);
+        return null;
+    }
+}
+ feature/favorites-list
+const suggestionsDiv = document.getElementById('suggestions');
+
+wordInput.addEventListener('input', async (e) => {
+    const query = e.target.value.trim();
+    if (query.length < 2) {
+        suggestionsDiv.classList.remove('show');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(query)}&max=5`);
+        const data = await response.json();
+        
+        if (data.length > 0) {
+            suggestionsDiv.innerHTML = data.map(item => 
+                `<div class="suggestion-item" data-word="${item.word}">${item.word}</div>`
+            ).join('');
+            suggestionsDiv.classList.add('show');
+            
+            // Click pe sugestie
+            document.querySelectorAll('.suggestion-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    wordInput.value = el.dataset.word;
+                    suggestionsDiv.classList.remove('show');
+                    searchWord();
+                });
+            });
+        } else {
+            suggestionsDiv.classList.remove('show');
+        }
+    } catch (err) {
+        console.warn("Eroare sugestii:", err);
+    }
+});
+
+// Ascunde sugestiile la click în afara
+document.addEventListener('click', (e) => {
+    if (!wordInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+        suggestionsDiv.classList.remove('show');
+    }
+});
+// ========== FAVORITES LIST ==========
+let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+function saveFavorites() {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function addToFavorites(word) {
+    if (!favorites.includes(word)) {
+        favorites.push(word);
+        saveFavorites();
+        showToast(`✅ "${word}" adăugat la favorite!`);
+    }
+}
+
+function removeFromFavorites(word) {
+    favorites = favorites.filter(fav => fav !== word);
+    saveFavorites();
+    showToast(`🗑️ "${word}" șters din favorite`);
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+
+=======
+
 
 // La finalul funcției searchWord()
 function saveToHistory(word) {
@@ -407,6 +533,7 @@ document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
         }
     }
 });
+ Cuvantul.zilei
 // ========== CUVÂNTUL ZILEI ==========
 // Dicționar cu cuvinte pentru fiecare zi
 const wordsOfDay = [
@@ -594,3 +721,7 @@ function initWordOfDay() {
 
 // Pornește la încărcarea paginii
 document.addEventListener('DOMContentLoaded', initWordOfDay);
+
+ main
+ main
+ main
