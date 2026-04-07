@@ -525,3 +525,129 @@ body.dark-mode .history-item {
 body.dark-mode .empty-history {
     color: #aaa;
 }
+/* Cuvântul zilei */
+.word-of-day-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+    color: white;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.word-of-day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.word-of-day-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4em;
+    font-weight: bold;
+}
+
+.word-of-day-title span:first-child {
+    font-size: 1.6em;
+}
+
+.current-date {
+    background: rgba(255,255,255,0.2);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+}
+
+.word-of-day-content {
+    text-align: center;
+}
+
+.word-of-day-word {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin: 15px 0;
+    text-transform: capitalize;
+    letter-spacing: 2px;
+}
+
+.word-of-day-pronunciation {
+    font-size: 0.9em;
+    opacity: 0.9;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+.word-of-day-definition {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin: 15px 0;
+    padding: 0 20px;
+}
+
+.word-of-day-example {
+    background: rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 15px;
+    margin: 15px 0;
+    font-style: italic;
+    border-left: 3px solid #fbbf24;
+}
+
+.word-of-day-example::before {
+    content: "📖 ";
+    font-style: normal;
+}
+
+.word-of-day-synonyms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.synonym-tag {
+    background: rgba(255,255,255,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.synonym-tag:hover {
+    background: rgba(255,255,255,0.4);
+    transform: scale(1.05);
+}
+
+.refresh-word-day {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 15px;
+    font-size: 0.85em;
+    transition: all 0.2s;
+}
+
+.refresh-word-day:hover {
+    background: rgba(255,255,255,0.4);
+    transform: scale(1.02);
+}
+
+.loading {
+    text-align: center;
+    padding: 20px;
+}
+
+/* Versiune mod întunecat (opțional) */
+body.dark-mode .word-of-day-section {
+    background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+}
