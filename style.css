@@ -342,6 +342,29 @@ body {
     background: rgba(239, 68, 68, 0.12);
     border-left: 3px solid #ef4444;
 }
+ feature/pronunciation-audio
+.pronunciation-container {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.audio-btn {
+    background: var(--accent-glow);
+    border: 1px solid var(--accent);
+    padding: 0.5rem 1.2rem;
+    border-radius: 2rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--accent);
+    transition: all 0.2s ease;
+}
+
+.audio-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: scale(1.05);
+}
+
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 680px) {
     body {
@@ -525,3 +548,4 @@ body.dark-mode .history-item {
 body.dark-mode .empty-history {
     color: #aaa;
 }
+ main
