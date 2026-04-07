@@ -533,5 +533,195 @@ document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
         }
     }
 });
+ Cuvantul.zilei
+// ========== CUVÂNTUL ZILEI ==========
+// Dicționar cu cuvinte pentru fiecare zi
+const wordsOfDay = [
+    {
+        word: "frumos",
+        pronunciation: "/ˈfru.mos/",
+        definition: "Care are însușiri plăcute văzului, auzului sau spiritului; care impresionează prin aspect, culoare, formă etc.",
+        example: "A avut parte de un spectacol frumos la teatrul național.",
+        synonyms: ["atrăgător", "plăcut", "minunat", "superb", "estetic"]
+    },
+    {
+        word: "prietenie",
+        pronunciation: "/pri.eˈte.ni.e/",
+        definition: "Sentiment de afecțiune și stimă reciprocă dintre două sau mai multe persoane; relație bazată pe încredere și sprijin.",
+        example: "Prietenia dintre ei a durat mai bine de 20 de ani.",
+        synonyms: ["cameraderi", "tovărășie", "frăție", "apropiere"]
+    },
+    {
+        word: "munte",
+        pronunciation: "/ˈmun.te/",
+        definition: "Formă de relief pozitivă, cu altitudine mare, ce se înalță brusc deasupra regiunii înconjurătoare.",
+        example: "În fiecare vară, familia noastră merge într-o excursie la munte.",
+        synonyms: ["masiv", "culme", "pisc", "vârf"]
+    },
+    {
+        word: "călătorie",
+        pronunciation: "/kə.lə.toˈri.e/",
+        definition: "Acțiunea de a călători; deplasare într-un loc mai îndepărtat, de obicei cu un scop anume.",
+        example: "Călătoria în Japonia i-a schimbat perspectiva asupra vieții.",
+        synonyms: ["voiaj", "excursie", "expediție", "turneu"]
+    },
+    {
+        word: "bucurie",
+        pronunciation: "/buˈku.ri.e/",
+        definition: "Sentiment puternic de mulțumire și fericire, generat de un eveniment plăcut.",
+        example: "Bucuria de a-și revedea familia a fost copleșitoare.",
+        synonyms: ["fericire", "veselie", "încântare", "deliciu"]
+    },
+    {
+        word: "vis",
+        pronunciation: "/vis/",
+        definition: "Suită de imagini, senzații și idei care apar în timpul somnului; dorință puternică de a realiza ceva.",
+        example: "Visul lui este să devină medic și să ajute oamenii.",
+        synonyms: ["iluzie", "fantezie", "aspirație", "dorință"]
+    },
+    {
+        word: "libertate",
+        pronunciation: "/li.berˈta.te/",
+        definition: "Posibilitatea de a acționa sau gândi fără constrângeri externe; stare de independență.",
+        example: "Toți oamenii se nasc liberi și egali în demnitate și drepturi.",
+        synonyms: ["independență", "autonomie", "eliberare", "dezlegare"]
+    },
+    {
+        word: "cunoaștere",
+        pronunciation: "/kuˈno̯aʃ.te.re/",
+        definition: "Procesul de a dobândi informații, priceperi sau înțelegere prin experiență sau educație.",
+        example: "Cunoașterea istoriei ne ajută să înțelegem prezentul.",
+        synonyms: ["știință", "erudiție", "învățătură", "informare"]
+    }
+];
+
+// Cheia pentru localStorage (salvează cuvântul de azi)
+const WORD_KEY = 'bc_word_of_day';
+const DATE_KEY = 'bc_word_date';
+
+// Obține data curentă în format YYYY-MM-DD
+function getTodayDate() {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+}
+
+// Obține data afișată în format românesc
+function getFormattedDate() {
+    const today = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return today.toLocaleDateString('ro-RO', options);
+}
+
+// Generează un cuvânt random din listă (folosind data ca seed)
+function getWordOfDayByDate() {
+    const today = getTodayDate();
+    // Folosește data ca seed pentru a genera același cuvânt toată ziua
+    let hash = 0;
+    for (let i = 0; i < today.length; i++) {
+        hash = ((hash << 5) - hash) + today.charCodeAt(i);
+        hash = hash & hash;
+    }
+    const index = Math.abs(hash) % wordsOfDay.length;
+    return wordsOfDay[index];
+}
+
+// Salvează cuvântul zilei în localStorage
+function saveWordOfDay(word) {
+    localStorage.setItem(WORD_KEY, JSON.stringify(word));
+    localStorage.setItem(DATE_KEY, getTodayDate());
+}
+
+// Încarcă sau generează cuvântul zilei
+function loadWordOfDay() {
+    const savedDate = localStorage.getItem(DATE_KEY);
+    const savedWord = localStorage.getItem(WORD_KEY);
+    const today = getTodayDate();
+    
+    // Dacă există cuvânt salvat de azi, folosește-l
+    if (savedDate === today && savedWord) {
+        return JSON.parse(savedWord);
+    }
+    
+    // Altfel, generează unul nou
+    const newWord = getWordOfDayByDate();
+    saveWordOfDay(newWord);
+    return newWord;
+}
+
+// Afișează cuvântul zilei în pagină
+function displayWordOfDay() {
+    const container = document.getElementById('wordOfDayContent');
+    if (!container) return;
+    
+    const word = loadWordOfDay();
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+        dateElement.textContent = getFormattedDate();
+    }
+    
+    container.innerHTML = `
+        <div class="word-of-day-word">${word.word}</div>
+        <div class="word-of-day-pronunciation">${word.pronunciation}</div>
+        <div class="word-of-day-definition">📚 ${word.definition}</div>
+        <div class="word-of-day-example">${word.example}</div>
+        <div class="word-of-day-synonyms">
+            <strong>Sinonime:</strong>
+            ${word.synonyms.map(syn => `<span class="synonym-tag" data-word="${syn}">${syn}</span>`).join('')}
+        </div>
+        <button class="refresh-word-day" id="refreshWordDayBtn">🔄 Alt cuvânt (doar pentru test)</button>
+    `;
+    
+    // Adaugă evenimente pentru sinonime (când se dă click, caută acel cuvânt)
+    document.querySelectorAll('.synonym-tag').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+            const synonymWord = tag.getAttribute('data-word');
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = synonymWord;
+                // Dacă există funcție de căutare, apeleaz-o
+                if (typeof performSearch === 'function') {
+                    performSearch(synonymWord);
+                } else {
+                    alert(`Caută: ${synonymWord}`);
+                }
+            }
+        });
+    });
+    
+    // Eveniment pentru butonul de refresh (doar pentru test - schimbă cuvântul)
+    const refreshBtn = document.getElementById('refreshWordDayBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', () => {
+            // Generează un cuvânt random diferit
+            const randomIndex = Math.floor(Math.random() * wordsOfDay.length);
+            const newWord = { ...wordsOfDay[randomIndex] };
+            saveWordOfDay(newWord);
+            displayWordOfDay();
+        });
+    }
+}
+
+// Resetează cuvântul zilei (forțează generarea unuia nou la miezul nopții)
+function checkAndResetWordOfDay() {
+    const savedDate = localStorage.getItem(DATE_KEY);
+    const today = getTodayDate();
+    if (savedDate !== today) {
+        const newWord = getWordOfDayByDate();
+        saveWordOfDay(newWord);
+        displayWordOfDay();
+    }
+}
+
+// Inițializează Cuvântul zilei
+function initWordOfDay() {
+    displayWordOfDay();
+    // Verifică la fiecare oră dacă s-a schimbat ziua
+    setInterval(checkAndResetWordOfDay, 3600000);
+}
+
+// Pornește la încărcarea paginii
+document.addEventListener('DOMContentLoaded', initWordOfDay);
+
+ main
  main
  main
