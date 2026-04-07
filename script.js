@@ -236,3 +236,174 @@ wordInput.focus();
 
 console.log("✅ Pull Request #5: Interactivitate completă - click pe sinonime/antonime");
 
+// La finalul funcției searchWord()
+function saveToHistory(word) {
+    let history = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    if (!history.includes(word)) {
+        history.unshift(word); // Adaugă la început
+        history = history.slice(0, 5); // Păstrează doar ultimele 5
+        localStorage.setItem('searchHistory', JSON.stringify(history));
+        displayHistory();
+    }
+}
+
+function displayHistory() {
+    const historyData = JSON.parse(localStorage.getItem('searchHistory')) || [];
+    // Aici creezi elemente HTML (span-uri) în header sau sub search box
+}
+// ========== ISTORIC CĂUTĂRI RECENTE ==========
+// MAXIM 5 CUVINTE ÎN ISTORIC
+
+// Cheia pentru localStorage
+const STORAGE_KEY = 'bc_dictionary_history';
+
+// Inițializare istoric
+let searchHistory = [];
+
+// Încarcă istoricul din localStorage la pornire
+function loadHistory() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        searchHistory = JSON.parse(saved);
+    } else {
+        searchHistory = [];
+    }
+    displayHistory();
+}
+
+// Salvează istoricul în localStorage
+function saveHistory() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(searchHistory));
+}
+
+// Adaugă un cuvânt nou în istoric (maxim 5)
+function addToHistory(word) {
+    if (!word || word.trim() === '') return;
+    
+    word = word.trim().toLowerCase();
+    
+    // Elimină dacă există deja
+    const index = searchHistory.indexOf(word);
+    if (index !== -1) {
+        searchHistory.splice(index, 1);
+    }
+    
+    // Adaugă la început
+    searchHistory.unshift(word);
+    
+    // Păstrează doar ultimele 5
+    if (searchHistory.length > 5) {
+        searchHistory.pop();
+    }
+    
+    saveHistory();
+    displayHistory();
+}
+
+// Șterge un cuvânt specific din istoric
+function removeFromHistory(word) {
+    const index = searchHistory.indexOf(word);
+    if (index !== -1) {
+        searchHistory.splice(index, 1);
+        saveHistory();
+        displayHistory();
+    }
+}
+
+// Șterge tot istoricul
+function clearHistory() {
+    searchHistory = [];
+    saveHistory();
+    displayHistory();
+}
+
+// Afișează istoricul în container
+function displayHistory() {
+    const container = document.getElementById('historyContainer');
+    if (!container) return;
+    
+    if (searchHistory.length === 0) {
+        container.innerHTML = '<div class="empty-history">📭 Niciun cuvânt căutat recent. Încearcă să cauți ceva!</div>';
+        return;
+    }
+    
+    container.innerHTML = searchHistory.map(word => `
+        <div class="history-item" data-word="${word}">
+            <span>🔍 ${word}</span>
+            <button class="delete-history-item" data-word="${word}" title="Șterge">✕</button>
+        </div>
+    `).join('');
+    
+    // Adaugă evenimente pentru butoanele de ștergere individuale
+    document.querySelectorAll('.delete-history-item').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const word = btn.getAttribute('data-word');
+            removeFromHistory(word);
+        });
+    });
+    
+    // Adaugă evenimente pentru click pe cuvinte (re-caută)
+    document.querySelectorAll('.history-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Evită dacă s-a dat click pe butonul de ștergere
+            if (e.target.classList.contains('delete-history-item')) return;
+            
+            const word = item.getAttribute('data-word');
+            if (word) {
+                // Completează input-ul de căutare
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    searchInput.value = word;
+                }
+                // Apelează funcția de căutare (personalizează după nevoile tale)
+                if (typeof performSearch === 'function') {
+                    performSearch(word);
+                } else {
+                    // Dacă nu ai funcție de căutare, poți afișa un mesaj
+                    console.log('Caută:', word);
+                    alert(`Caută cuvântul: ${word}`);
+                }
+                // Adaugă din nou în istoric (mută la început)
+                addToHistory(word);
+            }
+        });
+    });
+}
+
+// ===== INTEGRARE CU FUNCȚIA TA DE CĂUTARE =====
+// Modifică funcția ta de căutare existentă să includă istoricul
+// Exemplu: Când cineva caută un cuvânt, apelează addToHistory(cuvant)
+
+// Exemplu de funcție de căutare (adapteaz-o la codul tău)
+function performSearch(word) {
+    // Aici vine logica ta de căutare în dicționar
+    addToHistory(word); // 🔥 SALVEAZĂ ÎN ISTORIC
+    
+    // Restul codului tău de căutare...
+    console.log('Se caută:', word);
+}
+
+// Eveniment pentru butonul "Șterge tot istoricul"
+document.getElementById('clearHistoryBtn')?.addEventListener('click', clearHistory);
+
+// Încarcă istoricul la pornire
+loadHistory();
+
+// Dacă ai un buton de căutare, adaugă evenimentul
+document.getElementById('searchBtn')?.addEventListener('click', () => {
+    const input = document.getElementById('searchInput');
+    if (input && input.value.trim()) {
+        performSearch(input.value.trim());
+    }
+});
+
+// Dacă ai Enter pe input
+document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        const input = document.getElementById('searchInput');
+        if (input && input.value.trim()) {
+            performSearch(input.value.trim());
+        }
+    }
+});

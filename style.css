@@ -408,3 +408,120 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-dark);
 }
+/* Istoric căutări recente */
+.history-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid #667eea;
+}
+
+.history-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.history-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.history-title span:first-child {
+    font-size: 1.3em;
+}
+
+.clear-history {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+}
+
+.clear-history:hover {
+    background: #c82333;
+}
+
+.history-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.history-item {
+    background: white;
+    border: 1px solid #dee2e6;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.history-item:hover {
+    background: #667eea;
+    color: white;
+    transform: scale(1.05);
+    border-color: #667eea;
+}
+
+.delete-history-item {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #999;
+    padding: 0 4px;
+    transition: color 0.2s;
+}
+
+.delete-history-item:hover {
+    color: #dc3545;
+}
+
+.history-item:hover .delete-history-item {
+    color: white;
+}
+
+.empty-history {
+    color: #6c757d;
+    font-style: italic;
+    padding: 10px 0;
+    text-align: center;
+}
+
+/* Versiune mod întunecat (opțional) */
+body.dark-mode .history-section {
+    background: #3d3d3d;
+    border-left-color: #9b59b6;
+}
+
+body.dark-mode .history-title {
+    color: #ecf0f1;
+}
+
+body.dark-mode .history-item {
+    background: #2d2d2d;
+    border-color: #555;
+    color: #ecf0f1;
+}
+
+body.dark-mode .empty-history {
+    color: #aaa;
+}
