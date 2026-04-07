@@ -287,6 +287,79 @@ async function fetchPronunciation(word) {
         return null;
     }
 }
+ feature/favorites-list
+const suggestionsDiv = document.getElementById('suggestions');
+
+wordInput.addEventListener('input', async (e) => {
+    const query = e.target.value.trim();
+    if (query.length < 2) {
+        suggestionsDiv.classList.remove('show');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(query)}&max=5`);
+        const data = await response.json();
+        
+        if (data.length > 0) {
+            suggestionsDiv.innerHTML = data.map(item => 
+                `<div class="suggestion-item" data-word="${item.word}">${item.word}</div>`
+            ).join('');
+            suggestionsDiv.classList.add('show');
+            
+            // Click pe sugestie
+            document.querySelectorAll('.suggestion-item').forEach(el => {
+                el.addEventListener('click', () => {
+                    wordInput.value = el.dataset.word;
+                    suggestionsDiv.classList.remove('show');
+                    searchWord();
+                });
+            });
+        } else {
+            suggestionsDiv.classList.remove('show');
+        }
+    } catch (err) {
+        console.warn("Eroare sugestii:", err);
+    }
+});
+
+// Ascunde sugestiile la click în afara
+document.addEventListener('click', (e) => {
+    if (!wordInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+        suggestionsDiv.classList.remove('show');
+    }
+});
+// ========== FAVORITES LIST ==========
+let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+
+function saveFavorites() {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+function addToFavorites(word) {
+    if (!favorites.includes(word)) {
+        favorites.push(word);
+        saveFavorites();
+        showToast(`✅ "${word}" adăugat la favorite!`);
+    }
+}
+
+function removeFromFavorites(word) {
+    favorites = favorites.filter(fav => fav !== word);
+    saveFavorites();
+    showToast(`🗑️ "${word}" șters din favorite`);
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2000);
+}
+
+
+=======
 
 
 // La finalul funcției searchWord()
@@ -460,4 +533,5 @@ document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
         }
     }
 });
+ main
  main
