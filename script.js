@@ -257,12 +257,39 @@ async function searchWord() {
         
         const definitionsHtml = renderDefinitions(word, definitionResult, translatedWord, translatedMeanings);
         const synonymsAntonymsHtml = renderSynonymsAntonyms(translatedSynonyms, translatedAntonyms);
+        const copyButtonHtml = `<button class="copy-btn" type="button">📋 Copiază rezultatul</button>`;
         
-        resultContainer.innerHTML = `<div class="results-card">${definitionsHtml}${synonymsAntonymsHtml}</div>`;
+        resultContainer.innerHTML = `<div class="results-card">${copyButtonHtml}${definitionsHtml}${synonymsAntonymsHtml}</div>`;
         
         addToHistory(word);
     } catch (err) {
         showError("Eroare de rețea. Reîncearcă.");
+    }
+}
+
+async function copyDefinitionResult() {
+    const card = resultContainer.querySelector('.results-card');
+    if (!card) return;
+
+    const title = card.querySelector('.word-title')?.innerText || '';
+    const translation = card.querySelector('.translation')?.innerText || '';
+    const definitions = Array.from(card.querySelectorAll('.definitions-list li')).map(li => li.innerText.trim()).join('\n');
+    const synonyms = Array.from(card.querySelectorAll('.synonyms-box .word-tag')).map(tag => tag.innerText.trim()).join(', ');
+    const antonyms = Array.from(card.querySelectorAll('.antonyms-box .word-tag')).map(tag => tag.innerText.trim()).join(', ');
+
+    const clipboardText = [
+        `Cuvânt: ${title}`,
+        translation ? `${translation}` : '',
+        definitions ? `Definiții și exemple:\n${definitions}` : '',
+        synonyms ? `Sinonime: ${synonyms}` : '',
+        antonyms ? `Antonime: ${antonyms}` : ''
+    ].filter(Boolean).join('\n\n');
+
+    try {
+        await navigator.clipboard.writeText(clipboardText);
+        alert('Rezultatul a fost copiat în clipboard!');
+    } catch (err) {
+        showError('Nu am putut copia rezultatul. Încearcă din nou.');
     }
 }
 
@@ -282,9 +309,13 @@ async function searchRandomWord() {
     await searchWord();
 }
 
-// ========== CLICK PE SINONIME/ANTONIME ==========
+// ========== CLICK PE SINONIME/ANTONIME ȘI COPIARE ==========
 resultContainer.addEventListener('click', async (e) => {
-    let target = e.target;
+    const target = e.target;
+    if (target.classList && target.classList.contains('copy-btn')) {
+        await copyDefinitionResult();
+        return;
+    }
     if (target.classList && target.classList.contains('word-tag')) {
         const clickedWord = target.innerText.trim();
         if (clickedWord && clickedWord.length > 0) {
