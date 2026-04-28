@@ -6,10 +6,7 @@
     <title>B&C - Dicționarul Școlar</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
- feature/pronunciation-audio
-
      <link rel="icon" type="image/x-icon" href="https://media.gettyimages.com/id/2183725086/vector/open-book-line-icon-vector-design.jpg?s=612x612&w=0&k=20&c=VH2WQe2t1YZigeVczY7vN4APlNCemLNFI27ugGGyBnU=">
- main
 </head>
 <body>
     <div class="container">
@@ -30,56 +27,51 @@
         <div id="resultContainer">
             <div class="info-text">
                 ✨ Bun venit la B&C - Dicționarul Școlar!<br>
-                🚀 Pull Request #1: Header adăugat cu succes.
+               
             </div>
         </div>
+
+        <!-- ========== SEARCH BAR START ========== -->
+        <div class="search-section">
+            <div class="search-box">
+                <input type="text" id="wordInput" placeholder="Exemplu: frumos, prietenie, munte, călătorie, bucurie..." autocomplete="off">
+                <button id="searchBtn">
+                    🔍 <span>Caută cuvânt</span>
+                </button>
+            </div>
+        </div>
+        <!-- ========== SEARCH BAR END ========== -->
+
+         <!-- Secțiune Istoric Căutări Recente -->
+        <div class="history-section">
+            <div class="history-header">
+                <div class="history-title">
+                    <span>🕒</span>
+                    <span>Căutări recente</span>
+                </div>
+                <button class="clear-history" id="clearHistoryBtn">Șterge istoric</button>
+            </div>
+            <div id="historyContainer" class="history-buttons">
+                <!-- Aici se vor afișa automat cuvintele căutate recent -->
+            </div>
+        </div>
+
+        <!-- Secțiune Cuvântul zilei -->
+        <div class="word-of-day-section">
+            <div class="word-of-day-header">
+                <div class="word-of-day-title">
+                    <span>⭐</span>
+                    <span>Cuvântul zilei</span>
+                </div>
+                <span class="current-date" id="currentDate"></span>
+            </div>
+            <div class="word-of-day-content" id="wordOfDayContent">
+                <!-- Se încarcă automat cu cuvântul zilei -->
+                <div class="loading">Se încarcă...</div>
+            </div>
+        </div>
+
     </div>
     <script src="script.js"></script>
 </body>
 </html>
-<!-- ========== SEARCH BAR START ========== -->
-<div class="search-section">
-    <div class="search-box">
-        <input type="text" id="wordInput" placeholder="Exemplu: frumos, prietenie, munte, călătorie, bucurie..." autocomplete="off">
-        <button id="searchBtn">
-            🔍 <span>Caută cuvânt</span>
-        </button>
-    </div>
-    <div id="suggestions" class="suggestions-dropdown"></div>
-</div>
-<!-- ========== SEARCH BAR END ========== -->
- feature/pronunciation-audio
- <div class="pronunciation-container" id="pronunciationContainer" style="display: none;">
-    <button id="playAudioBtn" class="audio-btn">🔊 Ascultă pronunția</button>
-
- <!-- Secțiune Istoric Căutări Recente -->
-<div class="history-section">
-    <div class="history-header">
-        <div class="history-title">
-            <span>🕒</span>
-            <span>Căutări recente</span>
-        </div>
-        <button class="clear-history" id="clearHistoryBtn">Șterge istoric</button>
-    </div>
-    <div id="historyContainer" class="history-buttons">
-        <!-- Aici se vor afișa automat cuvintele căutate recent -->
-    </div>
- Cuvantul.zilei
-</div>
-<!-- Secțiune Cuvântul zilei -->
-<div class="word-of-day-section">
-    <div class="word-of-day-header">
-        <div class="word-of-day-title">
-            <span>⭐</span>
-            <span>Cuvântul zilei</span>
-        </div>
-        <span class="current-date" id="currentDate"></span>
-    </div>
-    <div class="word-of-day-content" id="wordOfDayContent">
-        <!-- Se încarcă automat cu cuvântul zilei -->
-        <div class="loading">Se încarcă...</div>
-    </div>
-=======
- main
- main
-</div>
