@@ -30,21 +30,13 @@ darkToggle.addEventListener('click', () => {
 console.log("✅ Pull Request #1: Header + Dark Mode funcțional");
 // ========== ELEMENTE SEARCH ==========
 const searchBtn = document.getElementById('searchBtn');
+const randomBtn = document.getElementById('randomBtn');
 const wordInput = document.getElementById('wordInput');
 const resultContainer = document.getElementById('resultContainer');
 
-// ========== FUNCȚIE CAUTARE TEMPORARĂ ==========
-function searchWord() {
-    let word = wordInput.value.trim();
-    if (word === "") {
-        resultContainer.innerHTML = `<div class="info-text">⚠️ Te rog să introduci un cuvânt.</div>`;
-        return;
-    }
-    resultContainer.innerHTML = `<div class="info-text">🔍 Ai căutat: "<strong>${word}</strong>".<br>🚀 În curând: definiții, sinonime și antonime!</div>`;
-}
-
 // ========== EVENIMENTE ==========
 searchBtn.addEventListener('click', searchWord);
+randomBtn?.addEventListener('click', searchRandomWord);
 wordInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         e.preventDefault();
@@ -54,11 +46,7 @@ wordInput.addEventListener('keypress', (e) => {
 
 console.log("✅ Pull Request #2: Bara de căutare funcțională");
 
- feature/pronunciation-audio
-
-
 // ========== API DEFINITII ==========
-> main
 async function fetchDefinitions(word) {
     const url = `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`;
     try {
@@ -76,83 +64,7 @@ async function fetchDefinitions(word) {
     }
 }
 
- feature/pronunciation-audio
-
-
-// ========== AFIȘARE DEFINITII ==========
- main
-function renderDefinitions(word, definitionData) {
-    if (!definitionData) {
-        return `<div class="info-text">⚠️ Nu am găsit definiții pentru "${word}".</div>`;
-    }
-    
-    const phonetic = definitionData.phonetic || definitionData.phonetics?.find(p => p.text)?.text || '';
-    const meanings = definitionData.meanings || [];
-    
-    let definitionsHtml = '';
-    if (phonetic) {
-        definitionsHtml += `<div class="phonetic">/${phonetic}/</div>`;
-    }
-    
-    for (const meaning of meanings) {
-        const partOfSpeech = meaning.partOfSpeech || 'cuvânt';
-        const definiții = meaning.definitions || [];
-        let defListHtml = '';
-        for (let def of definiții.slice(0, 3)) {
-            const definitionText = def.definition || '';
-            const exampleText = def.example ? `<span class="example">💬 "${def.example}"</span>` : '';
-            defListHtml += `<li>${definitionText} ${exampleText}</li>`;
-        }
-        definitionsHtml += `
-            <div class="meaning-block">
-                <div class="part-of-speech">📌 ${partOfSpeech}</div>
-                <ul class="definitions-list">${defListHtml}</ul>
-            </div>
-        `;
-    }
-    
-    return `
-        <div class="word-header">
-            <div class="word-title">${word}</div>
-        </div>
-        ${definitionsHtml}
-    `;
-}
-
- feature/pronunciation-audio
-
-
-// ========== FUNCȚIE CAUTARE COMPLETĂ ==========
- main
-async function searchWord() {
-    let word = wordInput.value.trim();
-    if (word === "") {
-        showError("Te rog să introduci un cuvânt pentru căutare.");
-        return;
-    }
-    
-    showLoading();
-    
-    try {
-        const definitionResult = await fetchDefinitions(word.toLowerCase());
-        
-        if (!definitionResult) {
-            resultContainer.innerHTML = `<div class="results-card"><div class="error-message">🔍 Nu am găsit definiții pentru "${word}".</div></div>`;
-            return;
-        }
-        
-        const definitionsHtml = renderDefinitions(word, definitionResult);
-        resultContainer.innerHTML = `<div class="results-card">${definitionsHtml}</div>`;
-    } catch (err) {
-        showError("A apărut o eroare. Verifică conexiunea.");
-    }
-}
-
- feature/pronunciation-audio
-
-
 // ========== FUNCȚII AJUTĂTOARE ==========
- main
 function showLoading() {
     resultContainer.innerHTML = `<div class="results-card"><div class="loader"><div class="spinner"></div><span>Se încarcă definițiile...</span></div></div>`;
 }
@@ -161,12 +73,44 @@ function showError(message) {
     resultContainer.innerHTML = `<div class="results-card"><div class="error-message">⚠️ ${message}</div></div>`;
 }
 
-console.log("✅ Pull Request #3: API definiții integrat");
- feature/pronunciation-audio
+// ========== API TRADUCERE ==========
+async function fetchTranslation(word) {
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(word)}&langpair=ro|en`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const translatedText = data.responseData?.translatedText;
+        if (translatedText && translatedText.toLowerCase() !== word.toLowerCase()) {
+            return translatedText;
+        }
+        return word;
+    } catch (err) {
+        console.warn("Eroare API traducere:", err);
+        return word;
+    }
+}
 
+async function translateTextToRomanian(text) {
+    if (!text || text.trim() === '') return text;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|ro`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        return data.responseData?.translatedText || text;
+    } catch (err) {
+        console.warn("Eroare la traducerea textului în română:", err);
+        return text;
+    }
+}
 
-// ========== API SINONIME ANTONIME ==========
- main
+async function translateListToRomanian(words) {
+    return await Promise.all(words.map(async (word) => {
+        return await translateTextToRomanian(word);
+    }));
+}
+
 async function fetchSynonymsAntonyms(word) {
     const synonymsUrl = `https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}&max=12`;
     const antonymsUrl = `https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}&max=12`;
@@ -187,11 +131,58 @@ async function fetchSynonymsAntonyms(word) {
     }
 }
 
- feature/pronunciation-audio
-
+function renderDefinitions(word, definitionData, translation, romanianMeanings = []) {
+    if (!definitionData) {
+        return `<div class="info-text">⚠️ Nu am găsit definiții pentru "${word}".</div>`;
+    }
+    
+    const phonetic = definitionData.phonetic || definitionData.phonetics?.find(p => p.text)?.text || '';
+    
+    let definitionsHtml = '';
+    if (phonetic) {
+        definitionsHtml += `<div class="phonetic">/${phonetic}/</div>`;
+    }
+    
+    if (romanianMeanings.length === 0) {
+        romanianMeanings = (definitionData.meanings || []).map(meaning => {
+            return {
+                partOfSpeech: meaning.partOfSpeech || 'cuvânt',
+                definitions: (meaning.definitions || []).slice(0, 3).map(def => ({
+                    definition: def.definition || '',
+                    example: def.example || ''
+                }))
+            };
+        });
+    }
+    
+    for (const meaning of romanianMeanings) {
+        const partOfSpeech = meaning.partOfSpeech || 'cuvânt';
+        let defListHtml = '';
+        for (let def of meaning.definitions.slice(0, 3)) {
+            const definitionText = def.definition || '';
+            const exampleText = def.example ? `<span class="example">💬 "${def.example}"</span>` : '';
+            defListHtml += `<li>${definitionText} ${exampleText}</li>`;
+        }
+        definitionsHtml += `
+            <div class="meaning-block">
+                <div class="part-of-speech">📌 ${partOfSpeech}</div>
+                <ul class="definitions-list">${defListHtml}</ul>
+            </div>
+        `;
+    }
+    
+    const translationHtml = translation && translation !== word ? `<div class="translation">🇺🇸 Traducere în engleză: <strong>${translation}</strong></div>` : '';
+    
+    return `
+        <div class="word-header">
+            <div class="word-title">${word}</div>
+            ${translationHtml}
+        </div>
+        ${definitionsHtml}
+    `;
+}
 
 // ========== AFIȘARE SINONIME/ANTONIME ==========
- main
 function renderSynonymsAntonyms(synonyms, antonyms) {
     const synonymsHtml = synonyms.length > 0 
         ? synonyms.map(syn => `<span class="word-tag syn-tag">${syn}</span>`).join('')
@@ -215,11 +206,28 @@ function renderSynonymsAntonyms(synonyms, antonyms) {
     `;
 }
 
- feature/pronunciation-audio
-
+async function translateDefinitions(definitionData) {
+    const translatedMeanings = [];
+    for (const meaning of definitionData.meanings || []) {
+        const translatedDefs = [];
+        for (const def of (meaning.definitions || []).slice(0, 3)) {
+            const definitionText = def.definition || '';
+            const exampleText = def.example || '';
+            const [translatedDefinition, translatedExample] = await Promise.all([
+                translateTextToRomanian(definitionText),
+                exampleText ? translateTextToRomanian(exampleText) : Promise.resolve('')
+            ]);
+            translatedDefs.push({ definition: translatedDefinition, example: translatedExample });
+        }
+        translatedMeanings.push({
+            partOfSpeech: meaning.partOfSpeech || 'cuvânt',
+            definitions: translatedDefs
+        });
+    }
+    return translatedMeanings;
+}
 
 // ========== FUNCȚIE CAUTARE ACTUALIZATĂ ==========
- main
 async function searchWord() {
     let word = wordInput.value.trim();
     if (word === "") {
@@ -230,24 +238,51 @@ async function searchWord() {
     showLoading();
     
     try {
+        const translatedWord = await fetchTranslation(word);
+        console.log(`Traducere: "${word}" -> "${translatedWord}"`);
+        
         const [definitionResult, thesaurusResult] = await Promise.all([
-            fetchDefinitions(word.toLowerCase()),
-            fetchSynonymsAntonyms(word.toLowerCase())
+            fetchDefinitions(translatedWord.toLowerCase()),
+            fetchSynonymsAntonyms(translatedWord.toLowerCase())
         ]);
         
-        const definitionsHtml = definitionResult ? renderDefinitions(word, definitionResult) : `<div class="info-text">⚠️ Nu există definiții pentru "${word}".</div>`;
-        const synonymsAntonymsHtml = renderSynonymsAntonyms(thesaurusResult.synonyms, thesaurusResult.antonyms);
+        if (!definitionResult) {
+            resultContainer.innerHTML = `<div class="results-card"><div class="error-message">🔍 Nu am găsit definiții pentru "${word}".</div></div>`;
+            return;
+        }
+        
+        const translatedMeanings = await translateDefinitions(definitionResult);
+        const translatedSynonyms = await translateListToRomanian(thesaurusResult.synonyms);
+        const translatedAntonyms = await translateListToRomanian(thesaurusResult.antonyms);
+        
+        const definitionsHtml = renderDefinitions(word, definitionResult, translatedWord, translatedMeanings);
+        const synonymsAntonymsHtml = renderSynonymsAntonyms(translatedSynonyms, translatedAntonyms);
         
         resultContainer.innerHTML = `<div class="results-card">${definitionsHtml}${synonymsAntonymsHtml}</div>`;
+        
+        addToHistory(word);
     } catch (err) {
         showError("Eroare de rețea. Reîncearcă.");
     }
 }
- feature/pronunciation-audio
 
+function getRandomSearchWord() {
+    const knownWords = (typeof wordsOfDay !== 'undefined' && Array.isArray(wordsOfDay))
+        ? wordsOfDay.map(item => item.word)
+        : [];
+    if (knownWords.length === 0) return '';
+    const randomIndex = Math.floor(Math.random() * knownWords.length);
+    return knownWords[randomIndex];
+}
+
+async function searchRandomWord() {
+    const randomWord = getRandomSearchWord();
+    if (!randomWord) return;
+    wordInput.value = randomWord;
+    await searchWord();
+}
 
 // ========== CLICK PE SINONIME/ANTONIME ==========
- main
 resultContainer.addEventListener('click', async (e) => {
     let target = e.target;
     if (target.classList && target.classList.contains('word-tag')) {
@@ -267,100 +302,6 @@ resultContainer.addEventListener('click', async (e) => {
 wordInput.focus();
 
 console.log("✅ Pull Request #5: Interactivitate completă - click pe sinonime/antonime");
-feature/pronunciation-audio
-let currentAudioUrl = null;
-
-async function fetchPronunciation(word) {
-    // Folosește API-ul gratuit de la FreeDictionary (deja avem audio în definitionData)
-    try {
-        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`);
-        const data = await response.json();
-        if (data && data[0] && data[0].phonetics) {
-            const audio = data[0].phonetics.find(p => p.audio);
-            if (audio && audio.audio) {
-                return audio.audio;
-            }
-        }
-        return null;
-    } catch (err) {
-        console.warn("Eroare pronunție:", err);
-        return null;
-    }
-}
- feature/favorites-list
-const suggestionsDiv = document.getElementById('suggestions');
-
-wordInput.addEventListener('input', async (e) => {
-    const query = e.target.value.trim();
-    if (query.length < 2) {
-        suggestionsDiv.classList.remove('show');
-        return;
-    }
-    
-    try {
-        const response = await fetch(`https://api.datamuse.com/sug?s=${encodeURIComponent(query)}&max=5`);
-        const data = await response.json();
-        
-        if (data.length > 0) {
-            suggestionsDiv.innerHTML = data.map(item => 
-                `<div class="suggestion-item" data-word="${item.word}">${item.word}</div>`
-            ).join('');
-            suggestionsDiv.classList.add('show');
-            
-            // Click pe sugestie
-            document.querySelectorAll('.suggestion-item').forEach(el => {
-                el.addEventListener('click', () => {
-                    wordInput.value = el.dataset.word;
-                    suggestionsDiv.classList.remove('show');
-                    searchWord();
-                });
-            });
-        } else {
-            suggestionsDiv.classList.remove('show');
-        }
-    } catch (err) {
-        console.warn("Eroare sugestii:", err);
-    }
-});
-
-// Ascunde sugestiile la click în afara
-document.addEventListener('click', (e) => {
-    if (!wordInput.contains(e.target) && !suggestionsDiv.contains(e.target)) {
-        suggestionsDiv.classList.remove('show');
-    }
-});
-// ========== FAVORITES LIST ==========
-let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
-
-function saveFavorites() {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-}
-
-function addToFavorites(word) {
-    if (!favorites.includes(word)) {
-        favorites.push(word);
-        saveFavorites();
-        showToast(`✅ "${word}" adăugat la favorite!`);
-    }
-}
-
-function removeFromFavorites(word) {
-    favorites = favorites.filter(fav => fav !== word);
-    saveFavorites();
-    showToast(`🗑️ "${word}" șters din favorite`);
-}
-
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerText = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2000);
-}
-
-
-=======
-
 
 // La finalul funcției searchWord()
 function saveToHistory(word) {
@@ -478,36 +419,12 @@ function displayHistory() {
             const word = item.getAttribute('data-word');
             if (word) {
                 // Completează input-ul de căutare
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.value = word;
-                }
-                // Apelează funcția de căutare (personalizează după nevoile tale)
-                if (typeof performSearch === 'function') {
-                    performSearch(word);
-                } else {
-                    // Dacă nu ai funcție de căutare, poți afișa un mesaj
-                    console.log('Caută:', word);
-                    alert(`Caută cuvântul: ${word}`);
-                }
-                // Adaugă din nou în istoric (mută la început)
-                addToHistory(word);
+                wordInput.value = word;
+                // Apelează funcția de căutare
+                searchWord();
             }
         });
     });
-}
-
-// ===== INTEGRARE CU FUNCȚIA TA DE CĂUTARE =====
-// Modifică funcția ta de căutare existentă să includă istoricul
-// Exemplu: Când cineva caută un cuvânt, apelează addToHistory(cuvant)
-
-// Exemplu de funcție de căutare (adapteaz-o la codul tău)
-function performSearch(word) {
-    // Aici vine logica ta de căutare în dicționar
-    addToHistory(word); // 🔥 SALVEAZĂ ÎN ISTORIC
-    
-    // Restul codului tău de căutare...
-    console.log('Se caută:', word);
 }
 
 // Eveniment pentru butonul "Șterge tot istoricul"
@@ -515,25 +432,6 @@ document.getElementById('clearHistoryBtn')?.addEventListener('click', clearHisto
 
 // Încarcă istoricul la pornire
 loadHistory();
-
-// Dacă ai un buton de căutare, adaugă evenimentul
-document.getElementById('searchBtn')?.addEventListener('click', () => {
-    const input = document.getElementById('searchInput');
-    if (input && input.value.trim()) {
-        performSearch(input.value.trim());
-    }
-});
-
-// Dacă ai Enter pe input
-document.getElementById('searchInput')?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        const input = document.getElementById('searchInput');
-        if (input && input.value.trim()) {
-            performSearch(input.value.trim());
-        }
-    }
-});
- Cuvantul.zilei
 // ========== CUVÂNTUL ZILEI ==========
 // Dicționar cu cuvinte pentru fiecare zi
 const wordsOfDay = [
@@ -673,17 +571,11 @@ function displayWordOfDay() {
     
     // Adaugă evenimente pentru sinonime (când se dă click, caută acel cuvânt)
     document.querySelectorAll('.synonym-tag').forEach(tag => {
-        tag.addEventListener('click', (e) => {
+        tag.addEventListener('click', () => {
             const synonymWord = tag.getAttribute('data-word');
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.value = synonymWord;
-                // Dacă există funcție de căutare, apeleaz-o
-                if (typeof performSearch === 'function') {
-                    performSearch(synonymWord);
-                } else {
-                    alert(`Caută: ${synonymWord}`);
-                }
+            if (synonymWord) {
+                wordInput.value = synonymWord;
+                searchWord();
             }
         });
     });
@@ -721,7 +613,3 @@ function initWordOfDay() {
 
 // Pornește la încărcarea paginii
 document.addEventListener('DOMContentLoaded', initWordOfDay);
-
- main
- main
- main
